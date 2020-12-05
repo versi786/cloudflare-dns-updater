@@ -9,7 +9,7 @@
 1. Update `.env` to include `LEXICON_CLOUDFLARE_AUTH_TOKEN`, the api token should be created from instructions [here](https://github.com/AnalogJ/lexicon/blob/master/lexicon/providers/cloudflare.py)
 1. Run the following command, update items between angle backets
     ```
-    echo cd ${PWD} && python3 -m pipenv run python cloudflare-dns-updater.py --domain <example.com> --subdomain <test>
+    echo "cd ${PWD} && python3 -m pipenv run python cloudflare-dns-updater.py --domain example.com --subdomain test"
 
     ```
 1.  Run `crontab -e` and add the following, which will run every 10 minutes:

@@ -17,3 +17,4 @@
     */10 * * * * <command from previous step>
 
     ```
+1. If you would like to se the output of the cron jobs you can install `postfix` and take a look at /var/mail/${USER}. It also would be useful to set max mailbox size as described [here](https://www.cyberciti.biz/tips/postfix-mail-server-limit-the-mailbox-size.html). The output of cronjobs is sent as mail to the user who is runnig the command.

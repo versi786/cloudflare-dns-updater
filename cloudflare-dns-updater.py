@@ -39,6 +39,8 @@ def get_current_ip() -> Optional[str]:
 
 def update_ip(subdomain: str, domain: str, current_ip: str):
 
+    assert os.getenv("LEXICON_CLOUDFLARE_AUTH_TOKEN")
+
     # udpate file cache
     with open(cache_file(subdomain, domain), "w") as f:
         f.write(current_ip)

@@ -17,11 +17,15 @@ logger.setLevel(logging.INFO)
 CACHE_IP_FILE = os.path.dirname(os.path.abspath(__file__)) + "/dns_cache"
 
 
+def cache_file(subdomain, domain):
+    return CACHE_IP_FILE + ".{}.{}".format(subdomain, domain)
+
+
 def get_cached_ip(subdomain, domain) -> Optional[str]:
     try:
-        with open(CACHE_IP_FILE + f".{subdomain}.{domain}") as f:
+        with open(cache_file(subdomain, domain)) as f:
             cached_ip = f.read()
-            logger.debug(f"cached_ip: {cached_ip}")
+            logger.debug("cached_ip: {}".format(cached_ip))
             return cached_ip
     except IOError:
         return None
@@ -29,29 +33,30 @@ def get_cached_ip(subdomain, domain) -> Optional[str]:
 
 def get_current_ip() -> Optional[str]:
     current_ip = get("https://api.ipify.org").text
-    logger.debug(f"current_ip: {current_ip}")
+    logger.debug("current_ip: {}".format(current_ip))
     return current_ip
 
 
 def update_ip(subdomain: str, domain: str, current_ip: str):
 
     # udpate file cache
-    with open(CACHE_IP_FILE + f".{subdomain}.{domain}", "w") as f:
+    with open(cache_file(subdomain, domain), "w") as f:
         f.write(current_ip)
-        logger.debug(f"updated cached_ip: {current_ip}")
+        logger.debug("updated cached_ip: {}".format(current_ip))
 
     # update cloudflare
-    logger.debug(f"Updated {subdomain}.{domain} in cloudflare to {current_ip}")
+    logger.debug(
+        "Updated {}.{} in cloudflare to {}".format(subdomain, domain, current_ip)
+    )
     action = {
         "provider_name": "cloudflare",
         "action": "create",
-        "domain": f"{domain}",
+        "domain": "{}".format(domain),
         "type": "A",
-        "name": f"{subdomain}",
-        "content": f"{current_ip}",
+        "name": "{}".format(subdomain),
+        "content": "{}".format(current_ip),
         "ttl": 1,
     }
-    logger.debug(f"Action: {action}")
     config = ConfigResolver().with_env().with_dict(action)
     Client(config).execute()
 
@@ -81,9 +86,9 @@ def main():
 
     if cached_ip != current_ip:
         update_ip(args.subdomain, args.domain, current_ip)
-        logger.info(f"Updated ip {args.subdomain}")
+        logger.info("Updated ip {}".format(current_ip))
     else:
-        logger.info(f"Not updating ip is the same: {current_ip}")
+        logger.info("Not updating ip is the same: {}".format(current_ip))
 
 
 if __name__ == "__main__":
